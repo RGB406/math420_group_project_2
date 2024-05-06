@@ -1,64 +1,20 @@
-clear vars
-[Nodes, M, D, E, y] = prep_distance('Project\ObservedDataSet3_dist.txt');
-G = NaN(Nodes);
-epsilon = 8;
-while (isnan(G))
-    epsilon = epsilon * 2;
-    G = perform_cvx(Nodes, y, E, epsilon);
-end
 
-[N, M, t_coords] = read_to_list('Project/Target2_coord.txt', 3);
-% figure
-% % Scatters the X and Y value of the Y matrix.
-% scatter(t_coords(:, 1), t_coords(:, 2), 'b*')
-% title('2D Plot of Target')
-% ylabel('Y')
-% xlabel('X')
+[N, M, t_coords] = read_to_list('Project/Target3_coord.txt', 3);
 
 
-% Calculating the eigenvalues of G
-[Q, V] = eig(G);
-% Get the order index from the sort method
-[E_G, order] = sort(diag(V), 'descend');
-% Re-sort the Q and V to descending order
-Q = Q(:, order);
-V = V(order, order);
-
-for j=[2 3]
-    % Create a Q for the smaller dimensions
-    Q_j = Q(:, 1:j);
-    V_j = V(1:j, 1:j);
-
-    % Compute the Y matrix for each dimension
-    Y = V_j.^0.5 * Q_j';
-
-end
-
-n = 3
-X = Y';
-x_bar = ((1/n) .* X) * ones([n, 1]);
-X_tilde = X - x_bar * ones([n, 1])';
-
-y_bar = (1/n) .* t_coords * ones([n, 1]);
-Y_tilde = t_coords - y_bar * ones([n, 1])';
-
-R_hat = X_tilde * transpose(Y_tilde);
-[U, S, V] = svd(R_hat);
-Q_hat = V * transpose(U);
-
-z_hat = x_bar - Q_hat'*y_bar;
-a_hat = trace(S)/(norm(X_tilde, 'fro')^2);
-
-final_coords = (X);
 figure
+% Scatters the X and Y value of the Y matrix.
 hold on
-scatter(final_coords(:, 1), final_coords(:, 2), 'r*')
-%scatter(t_coords(:, 1), t_coords(:, 2), 'b*')
+scatter(t_coords(:, 1), t_coords(:, 2), 'b*')
+scatter(-8458.67, 2610.42, 'ro')
 hold off
-title('2D Plot of Final')
+title('2D Plot of Target 3')
 ylabel('Y')
 xlabel('X')
 
+% t1 = 10
+% t2 = 33
+% t3 = 11
 
 function G = perform_cvx(N, y, E, eps)
 
